@@ -3,7 +3,7 @@ package com.vihanga.malinda.svmf.listner;
 import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
 import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
 
-public class MouseListner {
+public class MouseListenerImpl implements MouseListener {
 
     private double scrollX;
     private double scrollY;
@@ -14,14 +14,14 @@ public class MouseListner {
     private boolean mouseButtonPressed[];
     private boolean isDragging;
 
-    public MouseListner(double scrollX,
-                        double scrollY,
-                        double currentXPosition,
-                        double currentYPosition,
-                        double previousXPosition,
-                        double previousYPosition,
-                        boolean[] mouseButtonPressed,
-                        boolean isDragging) {
+    public MouseListenerImpl(double scrollX,
+                             double scrollY,
+                             double currentXPosition,
+                             double currentYPosition,
+                             double previousXPosition,
+                             double previousYPosition,
+                             boolean[] mouseButtonPressed,
+                             boolean isDragging) {
 //        this.scrollX = 0.0;
 //        this.scrollY = 0.0;
 //        this.xPosition = 0.0;
@@ -40,7 +40,7 @@ public class MouseListner {
         this.isDragging = isDragging;
 
     }
-
+    @Override
     public void mousePositionCallBack(long window,
                                       double xPosition,
                                       double yPosition) {
@@ -60,6 +60,7 @@ public class MouseListner {
 
     }
 
+    @Override
     public void mouseButtonCallBack(long window,
                                     int button,
                                     int action,
@@ -74,6 +75,7 @@ public class MouseListner {
         }
     }
 
+    @Override
     public void mouseScrollCallBack(long window,
                                     double xOffset,
                                     double yOffset) {
@@ -81,6 +83,7 @@ public class MouseListner {
         this.scrollY = yOffset;
     }
 
+//    @Override
     public void endFrame() {
         this.scrollX = 0;
         this.scrollY = 0;
@@ -111,7 +114,7 @@ public class MouseListner {
         isDragging = dragging;
     }
 
-    public void updateCurrentPosition(double xPosition,
+    private void updateCurrentPosition(double xPosition,
                                       double yPosition) {
         this.setCurrentXPosition(xPosition);
         this.setCurrentYPosition(yPosition);

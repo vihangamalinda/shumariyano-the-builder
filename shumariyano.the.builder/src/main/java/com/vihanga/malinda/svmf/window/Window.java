@@ -1,11 +1,11 @@
 package com.vihanga.malinda.svmf.window;
 
-import com.vihanga.malinda.svmf.listner.KeyListner;
-import com.vihanga.malinda.svmf.listner.MouseListner;
+import com.vihanga.malinda.svmf.listner.KeyListener;
+import com.vihanga.malinda.svmf.listner.MouseListener;
+import com.vihanga.malinda.svmf.listner.MouseListenerImpl;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
 
-//import static java.sql.Types.NULL;
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.opengl.GL11C.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
@@ -17,15 +17,15 @@ public class Window {
     private int height;
     private String title;
     private long glfwWindow;
-    private final MouseListner mouseListner;
-    private final KeyListner keyListner;
+    private final MouseListener mouseListener;
+    private final KeyListener keyListener;
 
-    public Window(int width, int height, String title, MouseListner mouseListner,KeyListner keyListner) {
+    public Window(int width, int height, String title, MouseListener mouseListener, KeyListener keyListener) {
         this.width = width;
         this.height = height;
         this.title = title;
-        this.mouseListner = mouseListner;
-        this.keyListner = keyListner;
+        this.mouseListener = mouseListener;
+        this.keyListener = keyListener;
     }
 
     public void run() {
@@ -85,13 +85,13 @@ public class Window {
     }
 
     private void configureKeyListnerCallbacks() {
-        glfwSetKeyCallback(this.glfwWindow,keyListner::keyCallback);
+        glfwSetKeyCallback(this.glfwWindow,keyListener::keyCallback);
     }
 
     private void configureMouseListnerCallbacks() {
-        glfwSetCursorPosCallback(this.glfwWindow,mouseListner::mousePositionCallBack);
-        glfwSetMouseButtonCallback(this.glfwWindow, mouseListner::mouseButtonCallBack);
-        glfwSetScrollCallback(this.glfwWindow, mouseListner::mouseScrollCallBack);
+        glfwSetCursorPosCallback(this.glfwWindow,mouseListener::mousePositionCallBack);
+        glfwSetMouseButtonCallback(this.glfwWindow, mouseListener::mouseButtonCallBack);
+        glfwSetScrollCallback(this.glfwWindow, mouseListener::mouseScrollCallBack);
     }
 
     private void configureGLFW() {
