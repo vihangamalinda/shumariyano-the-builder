@@ -1,9 +1,12 @@
 package com.vihanga.malinda.svmf.window;
 
+import com.vihanga.malinda.svmf.listner.KeyListner;
+import com.vihanga.malinda.svmf.listner.MouseListner;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
 
 //import static java.sql.Types.NULL;
+import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.opengl.GL11C.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
 import static org.lwjgl.glfw.GLFW.*;
@@ -14,17 +17,33 @@ public class Window {
     private int height;
     private String title;
     private long glfwWindow;
+    private final MouseListner mouseListner;
+    private final KeyListner keyListner;
 
-    public Window(int width, int height, String title) {
+    public Window(int width, int height, String title, MouseListner mouseListner,KeyListner keyListner) {
         this.width = width;
         this.height = height;
         this.title = title;
+        this.mouseListner = mouseListner;
+        this.keyListner = keyListner;
     }
 
     public void run() {
         System.out.println("Running window: " + title + " with dimensions: " + width + "x" + height);
         init();
         loop();
+
+        releaseMemory();
+    }
+
+    private void releaseMemory() {
+        // Free the window callbacks and destroy the window
+        glfwFreeCallbacks(this.glfwWindow);
+        glfwDestroyWindow(this.glfwWindow);
+
+        // Terminate GLFW and free the error callback
+        glfwTerminate();
+        glfwSetErrorCallback(null).free();
     }
 
     public void init(){
@@ -44,6 +63,9 @@ public class Window {
             throw new RuntimeException("Failed to create the GLFW window");
         }
 
+        //configure callbacks
+        configureCallbacks();
+
         // Make the OpenGL context current
         glfwMakeContextCurrent(this.glfwWindow);
 
@@ -55,6 +77,21 @@ public class Window {
 
 
 
+    }
+
+    private void configureCallbacks() {
+        configureMouseListnerCallbacks();
+        configureKeyListnerCallbacks();
+    }
+
+    private void configureKeyListnerCallbacks() {
+        glfwSetKeyCallback(this.glfwWindow,keyListner::keyCallback);
+    }
+
+    private void configureMouseListnerCallbacks() {
+        glfwSetCursorPosCallback(this.glfwWindow,mouseListner::mousePositionCallBack);
+        glfwSetMouseButtonCallback(this.glfwWindow, mouseListner::mouseButtonCallBack);
+        glfwSetScrollCallback(this.glfwWindow, mouseListner::mouseScrollCallBack);
     }
 
     private void configureGLFW() {
