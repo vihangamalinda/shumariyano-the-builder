@@ -2,7 +2,10 @@ package com.vihanga.malinda.svmf.window;
 
 import com.vihanga.malinda.svmf.listner.KeyListener;
 import com.vihanga.malinda.svmf.listner.MouseListener;
-import com.vihanga.malinda.svmf.listner.MouseListenerImpl;
+import com.vihanga.malinda.svmf.scene.LevelEditorScene;
+import com.vihanga.malinda.svmf.scene.LevelScene;
+import com.vihanga.malinda.svmf.scene.Scene;
+import com.vihanga.malinda.svmf.util.TimeUtil;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
 
@@ -21,7 +24,9 @@ public class Window {
     private final KeyListener keyListener;
     private final TimeUtil time;
 
-    public Window(int width, int height, String title, MouseListener mouseListener, KeyListener keyListener) {
+    private Scene currentScene;
+
+    public Window(int width, int height, String title, MouseListener mouseListener, KeyListener keyListener, TimeUtil time) {
         this.width = width;
         this.height = height;
         this.title = title;
@@ -36,6 +41,20 @@ public class Window {
         loop();
 
         releaseMemory();
+    }
+
+    public void changeScene(int newScene){
+        switch (newScene){
+            case 0:
+                currentScene = new LevelEditorScene(this.keyListener,false);
+                break;
+            case 1:
+                currentScene = new LevelScene();
+                break;
+            default:
+                assert false: "Unknown scene: " + newScene;
+                break;
+        }
     }
 
     private void releaseMemory() {
@@ -76,6 +95,8 @@ public class Window {
 
         // Make the window visible
         glfwShowWindow(this.glfwWindow);
+
+        this.changeScene(0);
 
 
 
@@ -125,6 +146,11 @@ public class Window {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
 
             glfwSwapBuffers(this.glfwWindow); // swap the color buffers
+
+            boolean isValidDelta = delta >0 ;
+            if(isValidDelta){
+                currentScene.update(this,delta);
+            }
 
             // Poll for window events. The key callback above will only be
             // invoked during this call.
