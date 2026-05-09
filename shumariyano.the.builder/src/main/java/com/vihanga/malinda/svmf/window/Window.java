@@ -16,9 +16,7 @@ import static org.lwjgl.glfw.GLFW.*;
 
 public class Window {
 
-    private int width;
-    private int height;
-    private String title;
+    private final WindowInformation windowInformation;
     private long glfwWindow;
     private final MouseListener mouseListener;
     private final KeyListener keyListener;
@@ -26,17 +24,15 @@ public class Window {
 
     private Scene currentScene;
 
-    public Window(int width, int height, String title, MouseListener mouseListener, KeyListener keyListener, TimeUtil time) {
-        this.width = width;
-        this.height = height;
-        this.title = title;
+    public Window(WindowInformation windowInformation, MouseListener mouseListener, KeyListener keyListener, TimeUtil time) {
+        this.windowInformation = windowInformation;
         this.mouseListener = mouseListener;
         this.keyListener = keyListener;
         this.time = time;
     }
 
     public void run() {
-        System.out.println("Running window: " + title + " with dimensions: " + width + "x" + height);
+        System.out.println("Running window: " + this.windowInformation.getTitle() + " with dimensions: " + this.windowInformation.getWidth() + "x" + this.windowInformation.getHeight());
         init();
         loop();
 
@@ -79,7 +75,8 @@ public class Window {
         configureGLFW();
 
         // Create the window
-        this.glfwWindow =  glfwCreateWindow(this.width, this.height, this.title, NULL, NULL);
+        this.glfwWindow = this.createWindow();
+
         if(this.glfwWindow == NULL){
             throw new RuntimeException("Failed to create the GLFW window");
         }
@@ -100,6 +97,14 @@ public class Window {
 
 
 
+    }
+
+    private long createWindow() {
+        return glfwCreateWindow(this.windowInformation.getWidth(),
+                                this.windowInformation.getHeight(),
+                                this.windowInformation.getTitle(),
+                                NULL,
+                                NULL);
     }
 
     private void configureCallbacks() {

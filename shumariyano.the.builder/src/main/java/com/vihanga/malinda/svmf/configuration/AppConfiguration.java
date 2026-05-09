@@ -7,17 +7,21 @@ import com.vihanga.malinda.svmf.listner.MouseListenerImpl;
 import com.vihanga.malinda.svmf.util.TimeUtil;
 import com.vihanga.malinda.svmf.util.TimeUtilImpl;
 import com.vihanga.malinda.svmf.window.Window;
+import com.vihanga.malinda.svmf.window.WindowInformation;
 
 public class AppConfiguration {
     private final Window window;
     private final int initialWindowWidth;
     private final int initialWindowHeight;
     private final String windowTitle;
+
+    private final WindowInformation windowInformation;
     private final MouseListener mouseListener;
     private final KeyListener keyListener;
     private final boolean[] keyPressed;
     private final boolean[] mouseButtonPressed;
     private final TimeUtil timeUtil;
+
 
     public AppConfiguration() {
         this.keyPressed = new boolean[350]; // GLFW has 350 key codes
@@ -37,9 +41,10 @@ public class AppConfiguration {
         this.initialWindowWidth = 1920;
         this.initialWindowHeight = 1080;
         this.windowTitle = "Shumariyo The Builder";
-        this.window = new Window(this.initialWindowWidth,
-                                 this.initialWindowHeight,
-                                 this.windowTitle,
+        this.windowInformation = new WindowInformation(this.initialWindowWidth,
+                                                       this.initialWindowHeight,
+                                                       this.windowTitle);
+        this.window = new Window(this.windowInformation,
                                  this.mouseListener,
                                  this.keyListener,
                                  this.timeUtil);
