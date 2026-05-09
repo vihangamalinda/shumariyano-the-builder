@@ -19,6 +19,7 @@ public class Window {
     private long glfwWindow;
     private final MouseListener mouseListener;
     private final KeyListener keyListener;
+    private final TimeUtil time;
 
     public Window(int width, int height, String title, MouseListener mouseListener, KeyListener keyListener) {
         this.width = width;
@@ -26,6 +27,7 @@ public class Window {
         this.title = title;
         this.mouseListener = mouseListener;
         this.keyListener = keyListener;
+        this.time = time;
     }
 
     public void run() {
@@ -113,6 +115,10 @@ public class Window {
         // Set the clear color
         glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
 
+        float beginTime =time.getElapsedTimeBySeconds();
+        float endTime;
+        float delta =-1.0f;
+
         // Run the rendering loop until the user has attempted to close
         // the window or has pressed the ESCAPE key.
         while ( !glfwWindowShouldClose(this.glfwWindow) ) {
@@ -123,6 +129,10 @@ public class Window {
             // Poll for window events. The key callback above will only be
             // invoked during this call.
             glfwPollEvents();
+
+            endTime = time.getElapsedTimeBySeconds();
+            delta = endTime - beginTime;
+            beginTime = endTime;
         }
 
     }
