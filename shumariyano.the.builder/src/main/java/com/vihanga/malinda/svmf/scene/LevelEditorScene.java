@@ -232,19 +232,24 @@ public class LevelEditorScene extends Scene{
     @Override
     public void update(Window window,
                        float delta) {
-        System.out.println("Rate of frames per second: " + (1.0f / delta));
-        if(!isChangingScene && keyListener.isKeyPressed(KeyEvent.VK_SPACE)){
-            isChangingScene = true;
-        }
+       // Bind shader program
+        glUseProgram(this.shaderProgram);
+       // Bind the VertexArrayObject that we are using
+        glBindVertexArray(this.vertexArrayObjectId);
 
-        if (isChangingScene && timeToChangeSceneThreshold>0){
-            timeToChangeSceneThreshold -= delta;
-            // RGB colour transition from black to white
-        } else if(isChangingScene){
-            // Change to level scene
-            window.changeScene(1);
+        // Enable the vertex attribute pointers
+        glEnableVertexAttribArray(0);
+        glEnableVertexAttribArray(1);
 
-        }
+        glDrawElements(GL_TRIANGLES,this.elementArray.length,GL_UNSIGNED_INT,0);
+
+        // unbind everything
+        glDisableVertexAttribArray(0);
+        glDisableVertexAttribArray(1);
+
+        glBindVertexArray(0);
+
+        glUseProgram(0);
     }
 
 
