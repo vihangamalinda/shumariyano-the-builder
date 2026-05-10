@@ -154,12 +154,13 @@ public class Window {
         while ( !glfwWindowShouldClose(this.glfwWindow) ) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
 
-            glfwSwapBuffers(this.glfwWindow); // swap the color buffers
-
             boolean isValidDelta = delta >0 ;
             if(isValidDelta){
                 currentScene.update(this,delta);
             }
+
+            // swap the color buffers should be after the currentScene.update() other wise it'll be hidden
+            glfwSwapBuffers(this.glfwWindow);
 
             // Poll for window events. The key callback above will only be
             // invoked during this call.
