@@ -2,7 +2,10 @@ package com.vihanga.malinda.svmf.window;
 
 import com.vihanga.malinda.svmf.listner.KeyListener;
 import com.vihanga.malinda.svmf.listner.MouseListener;
-import com.vihanga.malinda.svmf.listner.MouseListenerImpl;
+import com.vihanga.malinda.svmf.scene.LevelEditorScene;
+import com.vihanga.malinda.svmf.scene.LevelScene;
+import com.vihanga.malinda.svmf.scene.Scene;
+import com.vihanga.malinda.svmf.util.TimeUtil;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
 
@@ -13,27 +16,41 @@ import static org.lwjgl.glfw.GLFW.*;
 
 public class Window {
 
-    private int width;
-    private int height;
-    private String title;
+    private final WindowInformation windowInformation;
     private long glfwWindow;
     private final MouseListener mouseListener;
     private final KeyListener keyListener;
+    private final TimeUtil time;
 
-    public Window(int width, int height, String title, MouseListener mouseListener, KeyListener keyListener) {
-        this.width = width;
-        this.height = height;
-        this.title = title;
+    private Scene currentScene;
+
+    public Window(WindowInformation windowInformation, MouseListener mouseListener, KeyListener keyListener, TimeUtil time) {
+        this.windowInformation = windowInformation;
         this.mouseListener = mouseListener;
         this.keyListener = keyListener;
+        this.time = time;
     }
 
     public void run() {
-        System.out.println("Running window: " + title + " with dimensions: " + width + "x" + height);
+        System.out.println("Running window: " + this.windowInformation.getTitle() + " with dimensions: " + this.windowInformation.getWidth() + "x" + this.windowInformation.getHeight());
         init();
         loop();
 
         releaseMemory();
+    }
+
+    public void changeScene(int newScene){
+        switch (newScene){
+            case 0:
+                currentScene = new LevelEditorScene(this.keyListener,false);
+                break;
+            case 1:
+                currentScene = new LevelScene();
+                break;
+            default:
+                assert false: "Unknown scene: " + newScene;
+                break;
+        }
     }
 
     private void releaseMemory() {
@@ -58,7 +75,8 @@ public class Window {
         configureGLFW();
 
         // Create the window
-        this.glfwWindow =  glfwCreateWindow(this.width, this.height, this.title, NULL, NULL);
+        this.glfwWindow = this.createWindow();
+
         if(this.glfwWindow == NULL){
             throw new RuntimeException("Failed to create the GLFW window");
         }
@@ -75,8 +93,18 @@ public class Window {
         // Make the window visible
         glfwShowWindow(this.glfwWindow);
 
+        this.changeScene(0);
 
 
+
+    }
+
+    private long createWindow() {
+        return glfwCreateWindow(this.windowInformation.getWidth(),
+                                this.windowInformation.getHeight(),
+                                this.windowInformation.getTitle(),
+                                NULL,
+                                NULL);
     }
 
     private void configureCallbacks() {
@@ -113,6 +141,10 @@ public class Window {
         // Set the clear color
         glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
 
+        float beginTime =time.getElapsedTimeBySeconds();
+        float endTime;
+        float delta =-1.0f;
+
         // Run the rendering loop until the user has attempted to close
         // the window or has pressed the ESCAPE key.
         while ( !glfwWindowShouldClose(this.glfwWindow) ) {
@@ -120,9 +152,18 @@ public class Window {
 
             glfwSwapBuffers(this.glfwWindow); // swap the color buffers
 
+            boolean isValidDelta = delta >0 ;
+            if(isValidDelta){
+                currentScene.update(this,delta);
+            }
+
             // Poll for window events. The key callback above will only be
             // invoked during this call.
             glfwPollEvents();
+
+            endTime = time.getElapsedTimeBySeconds();
+            delta = endTime - beginTime;
+            beginTime = endTime;
         }
 
     }
