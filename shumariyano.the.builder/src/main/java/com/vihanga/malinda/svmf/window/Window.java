@@ -43,9 +43,11 @@ public class Window {
         switch (newScene){
             case 0:
                 currentScene = new LevelEditorScene(this.keyListener,false);
+                currentScene.init();
                 break;
             case 1:
                 currentScene = new LevelScene();
+                currentScene.init();
                 break;
             default:
                 assert false: "Unknown scene: " + newScene;
@@ -93,6 +95,13 @@ public class Window {
         // Make the window visible
         glfwShowWindow(this.glfwWindow);
 
+        // This line is critical for LWJGL's interoperation with GLFW's
+        // OpenGL context, or any context that is managed externally.
+        // LWJGL detects the context that is current in the current thread,
+        // creates the GLCapabilities instance and makes the OpenGL
+        // bindings available for use.
+        GL.createCapabilities();
+
         this.changeScene(0);
 
 
@@ -130,12 +139,7 @@ public class Window {
     }
 
     public void loop(){
-        // This line is critical for LWJGL's interoperation with GLFW's
-        // OpenGL context, or any context that is managed externally.
-        // LWJGL detects the context that is current in the current thread,
-        // creates the GLCapabilities instance and makes the OpenGL
-        // bindings available for use.
-        GL.createCapabilities();
+
 
 
         // Set the clear color
@@ -150,12 +154,13 @@ public class Window {
         while ( !glfwWindowShouldClose(this.glfwWindow) ) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
 
-            glfwSwapBuffers(this.glfwWindow); // swap the color buffers
-
             boolean isValidDelta = delta >0 ;
             if(isValidDelta){
                 currentScene.update(this,delta);
             }
+
+            // swap the color buffers should be after the currentScene.update() other wise it'll be hidden
+            glfwSwapBuffers(this.glfwWindow);
 
             // Poll for window events. The key callback above will only be
             // invoked during this call.
