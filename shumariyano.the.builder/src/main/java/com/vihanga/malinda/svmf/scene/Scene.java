@@ -9,4 +9,7 @@ public abstract class Scene {
 
     public abstract void update(float delta);
     public abstract void update(Window window,float delta);
+    public void init(){
+
+    }
 }
