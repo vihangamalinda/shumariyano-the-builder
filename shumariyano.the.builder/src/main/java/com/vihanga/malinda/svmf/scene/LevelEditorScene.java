@@ -90,6 +90,131 @@ public class LevelEditorScene extends Scene{
     }
 
     @Override
+    public void init(){
+        /**
+         * Compile and link Shaders
+         */
+        // 1) create & compile shaders
+        this.createAndCompileShaders();
+        // 2) link shaders and check for errors
+        this.linkShaders();
+
+        /*
+        ===============================================================
+         Generate VAO, VBO, and EBO buffer objects, and send to GPU
+        ===============================================================
+            + vao -> vertex array object
+            + vbo -> vertex buffer object
+            + ebo -> element buffer object
+         */
+        this.vertexArrayObjectId = glGenVertexArrays();
+        glBindVertexArray(this.vertexArrayObjectId);
+
+        // create a float buffer of vertices
+        FloatBuffer vertexBuffer = BufferUtils.createFloatBuffer(this.vertexArray.length);
+        vertexBuffer.put(this.vertexArray).flip();
+
+        // create VBO upload the vertex buffer
+        this.vertexBufferObjectId = glGenBuffers();
+        glBindBuffer(GL_ARRAY_BUFFER,
+                     this.vertexBufferObjectId);
+        glBufferData(GL_ARRAY_BUFFER,
+                     vertexBuffer,
+                     GL_STATIC_DRAW);
+
+        // Create the indices and upload
+        IntBuffer elementBuffer = BufferUtils.createIntBuffer(elementArray.length);
+        elementBuffer.put(elementArray).flip();
+
+        this.elementBufferObjectId = glGenBuffers();
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,
+                     this.elementBufferObjectId);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+                     elementBuffer,
+                     GL_STATIC_DRAW);
+
+        // Add the vertex attribute pointers
+        int positionSize = 3;
+        int colorSize = 4;
+        int floatSizeBytes = 4;
+        int vertexSizeBytes = (positionSize + colorSize) * floatSizeBytes;
+        glVertexAttribPointer(0,
+                              positionSize,
+                              GL_FLOAT,
+                              false,
+                              vertexSizeBytes,
+                              0);
+        glEnableVertexAttribArray(0);
+
+        glVertexAttribPointer(1,
+                              colorSize,
+                              GL_FLOAT,
+                              false,
+                              vertexSizeBytes,
+                              positionSize * floatSizeBytes);
+        glEnableVertexAttribArray(1);
+    }
+
+    private void linkShaders() {
+        this.shaderProgram = glCreateProgram();
+        glAttachShader(this.shaderProgram,this.vertexId);
+        glAttachShader(this.shaderProgram,this.fragmentId);
+        glLinkProgram(shaderProgram);
+
+        // Check for linking errors
+        int success = glGetProgrami(this.shaderProgram,GL_LINK_STATUS);
+        if(success ==GL_FALSE){
+            int length = glGetProgrami(this.shaderProgram,GL_INFO_LOG_LENGTH);
+            System.out.println("ERROR: 'defaultShader.glsl'\n\t Program shader linking failed.");
+            System.out.println(glGetProgramInfoLog(this.shaderProgram,length));
+            assert  false:"";
+        }
+    }
+
+    private void createAndCompileShaders(){
+        this.createAndCompileVertexShader();
+        this.createAndCompileFragmentShader();
+    }
+
+    private void createAndCompileVertexShader() {
+        // First load and compile the vertex shader
+        this.vertexId= glCreateShader(GL_VERTEX_SHADER);
+
+        // Pass the shader source to the GPU
+        glShaderSource(this.vertexId,this.vertexShaderSrc);
+        glCompileShader(this.vertexId);
+
+        // check for errors in compilation
+        int success = glGetShaderi(this.vertexId,GL_COMPILE_STATUS);
+        if(success == GL_FALSE){
+            int length =glGetShaderi(this.vertexId,GL_INFO_LOG_LENGTH);
+            System.out.println("ERROR: 'defaultShader.glsl'\n\t Vertex shader compilation failed.");
+            System.out.println(glGetShaderInfoLog(this.vertexId,length));
+            assert  false:"";
+        }
+    }
+
+    private void createAndCompileFragmentShader(){
+        // First load and compile the fragmentShader
+        this.fragmentId = glCreateShader(GL_FRAGMENT_SHADER);
+
+        // pass the shader source to the GPU
+        glShaderSource(this.fragmentId,this.fragmentShaderSrc);
+        glCompileShader(this.fragmentId);
+
+        // check for errors in compilation
+        int success = glGetShaderi(this.fragmentId,GL_COMPILE_STATUS);
+        if(success == GL_FALSE){
+            int length = glGetShaderi(this.fragmentId,GL_INFO_LOG_LENGTH);
+            System.out.println("ERROR: 'defaultShader.glsl'\n\t Fragment shader compilation failed.");
+            System.out.println(glGetShaderInfoLog(this.fragmentId,length));
+            assert  false:"";
+        }
+
+
+    }
+
+    @Override
     public void update(float delta) {
         if(!isChangingScene && keyListener.isKeyPressed(KeyEvent.VK_SPACE)){
             isChangingScene = true;
