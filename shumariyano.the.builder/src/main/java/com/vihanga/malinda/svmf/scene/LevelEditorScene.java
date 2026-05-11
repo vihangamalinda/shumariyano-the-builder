@@ -1,6 +1,7 @@
 package com.vihanga.malinda.svmf.scene;
 
 import com.vihanga.malinda.svmf.listner.KeyListener;
+import com.vihanga.malinda.svmf.renderer.Shader;
 import com.vihanga.malinda.svmf.window.Window;
 import org.lwjgl.BufferUtils;
 
@@ -19,30 +20,6 @@ public class LevelEditorScene extends Scene{
 
     private boolean isChangingScene;
     private float timeToChangeSceneThreshold ;
-
-    private String vertexShaderSrc ="#version 330 core\n" +
-            "    layout (location=0) in vec3 aPos;\n" +
-            "    layout (location=1) in vec4 aColor;\n" +
-            "\n" +
-            "    out vec4 fColor;\n" +
-            "\n" +
-            "    void main(){\n" +
-            "        fColor = aColor;\n" +
-            "        gl_Position = vec4(aPos, 1.0);\n" +
-            "    }";
-
-    private String fragmentShaderSrc ="#version 330 core\n" +
-            "\n" +
-            "    in vec4 fColor;\n" +
-            "    out vec4 color;\n" +
-            "\n" +
-            "    void main(){\n" +
-            "        color =fColor;\n" +
-            "    }";
-
-    private int vertexId;
-    private int fragmentId;
-    private int shaderProgram;
 
     private float[] vertexArray={
             //position                    // color
@@ -82,6 +59,8 @@ public class LevelEditorScene extends Scene{
     private int vertexBufferObjectId; // vboId
     private int elementBufferObjectId; //eboId
 
+    private Shader defaultShader;
+
     public LevelEditorScene(KeyListener keyListener,boolean isChangingScene){
         System.out.println("Level Editor Scene created");
         this.keyListener = keyListener;
@@ -91,13 +70,8 @@ public class LevelEditorScene extends Scene{
 
     @Override
     public void init(){
-        /**
-         * Compile and link Shaders
-         */
-        // 1) create & compile shaders
-        this.createAndCompileShaders();
-        // 2) link shaders and check for errors
-        this.linkShaders();
+        this.defaultShader = new Shader("assets/shaders/default.glsl");
+        this.defaultShader.compile();
 
         /*
         ===============================================================
@@ -155,65 +129,6 @@ public class LevelEditorScene extends Scene{
         glEnableVertexAttribArray(1);
     }
 
-    private void linkShaders() {
-        this.shaderProgram = glCreateProgram();
-        glAttachShader(this.shaderProgram,this.vertexId);
-        glAttachShader(this.shaderProgram,this.fragmentId);
-        glLinkProgram(shaderProgram);
-
-        // Check for linking errors
-        int success = glGetProgrami(this.shaderProgram,GL_LINK_STATUS);
-        if(success ==GL_FALSE){
-            int length = glGetProgrami(this.shaderProgram,GL_INFO_LOG_LENGTH);
-            System.out.println("ERROR: 'defaultShader.glsl'\n\t Program shader linking failed.");
-            System.out.println(glGetProgramInfoLog(this.shaderProgram,length));
-            assert  false:"";
-        }
-    }
-
-    private void createAndCompileShaders(){
-        this.createAndCompileVertexShader();
-        this.createAndCompileFragmentShader();
-    }
-
-    private void createAndCompileVertexShader() {
-        // First load and compile the vertex shader
-        this.vertexId= glCreateShader(GL_VERTEX_SHADER);
-
-        // Pass the shader source to the GPU
-        glShaderSource(this.vertexId,this.vertexShaderSrc);
-        glCompileShader(this.vertexId);
-
-        // check for errors in compilation
-        int success = glGetShaderi(this.vertexId,GL_COMPILE_STATUS);
-        if(success == GL_FALSE){
-            int length =glGetShaderi(this.vertexId,GL_INFO_LOG_LENGTH);
-            System.out.println("ERROR: 'defaultShader.glsl'\n\t Vertex shader compilation failed.");
-            System.out.println(glGetShaderInfoLog(this.vertexId,length));
-            assert  false:"";
-        }
-    }
-
-    private void createAndCompileFragmentShader(){
-        // First load and compile the fragmentShader
-        this.fragmentId = glCreateShader(GL_FRAGMENT_SHADER);
-
-        // pass the shader source to the GPU
-        glShaderSource(this.fragmentId,this.fragmentShaderSrc);
-        glCompileShader(this.fragmentId);
-
-        // check for errors in compilation
-        int success = glGetShaderi(this.fragmentId,GL_COMPILE_STATUS);
-        if(success == GL_FALSE){
-            int length = glGetShaderi(this.fragmentId,GL_INFO_LOG_LENGTH);
-            System.out.println("ERROR: 'defaultShader.glsl'\n\t Fragment shader compilation failed.");
-            System.out.println(glGetShaderInfoLog(this.fragmentId,length));
-            assert  false:"";
-        }
-
-
-    }
-
     @Override
     public void update(float delta) {
         if(!isChangingScene && keyListener.isKeyPressed(KeyEvent.VK_SPACE)){
@@ -232,8 +147,8 @@ public class LevelEditorScene extends Scene{
     @Override
     public void update(Window window,
                        float delta) {
-       // Bind shader program
-        glUseProgram(this.shaderProgram);
+        this.defaultShader.use();
+
        // Bind the VertexArrayObject that we are using
         glBindVertexArray(this.vertexArrayObjectId);
 
@@ -250,26 +165,6 @@ public class LevelEditorScene extends Scene{
         glBindVertexArray(0);
 
         glUseProgram(0);
+        this.defaultShader.detach();
     }
-
-
-//    @Override
-//    public void update(Window window,
-//                       float delta) {
-//        System.out.println("Rate of frames per second: " + (1.0f / delta));
-//        if(!isChangingScene && keyListener.isKeyPressed(KeyEvent.VK_SPACE)){
-//            isChangingScene = true;
-//        }
-//
-//        if (isChangingScene && timeToChangeSceneThreshold>0){
-//            timeToChangeSceneThreshold -= delta;
-//            // RGB colour transition from black to white
-//        } else if(isChangingScene){
-//            // Change to level scene
-//            window.changeScene(1);
-//
-//        }
-//    }
-
-
 }
