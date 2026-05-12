@@ -42,7 +42,7 @@ public class Window {
     public void changeScene(int newScene){
         switch (newScene){
             case 0:
-                currentScene = new LevelEditorScene(this.keyListener,false);
+                currentScene = new LevelEditorScene(this.keyListener,false,this.time);
                 currentScene.init();
                 break;
             case 1:

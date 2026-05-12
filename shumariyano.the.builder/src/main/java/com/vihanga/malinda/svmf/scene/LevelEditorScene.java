@@ -2,12 +2,14 @@ package com.vihanga.malinda.svmf.scene;
 
 import com.vihanga.malinda.svmf.listner.KeyListener;
 import com.vihanga.malinda.svmf.renderer.Shader;
+import com.vihanga.malinda.svmf.util.TimeUtil;
 import com.vihanga.malinda.svmf.window.Window;
 import org.lwjgl.BufferUtils;
 
 import java.awt.event.KeyEvent;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.sql.Time;
 
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL20.glGetShaderi;
@@ -60,12 +62,15 @@ public class LevelEditorScene extends Scene{
     private int elementBufferObjectId; //eboId
 
     private Shader defaultShader;
+    private TimeUtil time;
 
-    public LevelEditorScene(KeyListener keyListener,boolean isChangingScene){
+    public LevelEditorScene(KeyListener keyListener, boolean isChangingScene,
+                            TimeUtil time){
         System.out.println("Level Editor Scene created");
         this.keyListener = keyListener;
         this.isChangingScene = isChangingScene;
         this.timeToChangeSceneThreshold =2.0f;
+        this.time =time;
     }
 
     @Override
@@ -148,11 +153,13 @@ public class LevelEditorScene extends Scene{
     public void update(Window window,
                        float delta) {
         camera.getPosition().x -= delta*50.0f;
+        camera.getPosition().y -= delta*50.0f;
 
         this.defaultShader.use();
 
         defaultShader.uploadMat4f("uProjection",this.camera.getProjectionMatrix());
         defaultShader.uploadMat4f("uView",this.camera.getViewMatrix());
+        defaultShader.uploadFloat("uTime",this.time.getElapsedTimeBySeconds());
 
        // Bind the VertexArrayObject that we are using
         glBindVertexArray(this.vertexArrayObjectId);
