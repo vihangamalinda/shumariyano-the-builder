@@ -1,18 +1,17 @@
 package com.vihanga.malinda.svmf.renderer;
 
-import org.jetbrains.annotations.NotNull;
+import org.joml.Matrix3f;
 import org.joml.Matrix4f;
+import org.joml.Vector4f;
 import org.lwjgl.BufferUtils;
 
 import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.HashMap;
 import java.util.Map;
 
-import static com.vihanga.malinda.svmf.renderer.ShaderConstant.FRAGMENT_SHADER;
-import static com.vihanga.malinda.svmf.renderer.ShaderConstant.VERTEX_SHADER;
+import static com.vihanga.malinda.svmf.renderer.ShaderConstant.*;
 import static com.vihanga.malinda.svmf.renderer.ShaderHelper.getShaderSourceByTypeMap;
 import static org.lwjgl.opengl.GL11.GL_FALSE;
 import static org.lwjgl.opengl.GL20.*;
@@ -71,6 +70,7 @@ public class Shader {
         if (!this.isBeingUsed()) {
             // Bind shader program
             glUseProgram(this.shaderProgramId);
+            setIsBeingUsed(true);
         }
     }
 
@@ -88,14 +88,79 @@ public class Shader {
 
     public void uploadMat4f(String varName,
                             Matrix4f mat4) {
-        int varLocation = glGetUniformLocation(shaderProgramId,
-                                               varName); // get location of the variable for shader program
-        FloatBuffer matBuffer = BufferUtils.createFloatBuffer(16);
+        int varLocation = this.getGetUniformLocation(varName); // get location of the variable for shader program
+
+        this.use(); // using the shader
+        FloatBuffer matBuffer = BufferUtils.createFloatBuffer(BUFFER_CAPACITY_FOR_FOUR_DIMENSION_MATRIX);
         mat4.get(matBuffer); // flatten it out to 1D array with 16 elements
         glUniformMatrix4fv(varLocation,
                            false,
                            matBuffer);
     }
+
+
+    public void uploadMat3f(String varName,
+                            Matrix3f mat3) {
+        int varLocation = this.getGetUniformLocation(varName);
+
+        this.use();
+        FloatBuffer matBuffer = BufferUtils.createFloatBuffer(BUFFER_CAPACITY_FOR_THREE_DIMENSION_MATRIX);
+        mat3.get(matBuffer); // flatten it out to 1D array with 9 elements
+        glUniformMatrix3fv(varLocation,
+                           false,
+                           matBuffer);
+    }
+
+
+    public void uploadVec4(String varName,
+                           Vector4f vec4f) {
+        int varLocation = this.getGetUniformLocation(varName);
+        this.use();
+
+        glUniform4f(varLocation,
+                    vec4f.x,
+                    vec4f.y,
+                    vec4f.z,
+                    vec4f.w);
+    }
+
+
+    public void uploadVec3f(String varName,
+                            Vector4f vector4f) {
+        int varLocation = this.getGetUniformLocation(varName);
+        this.use();
+        glUniform3f(varLocation,
+                    vector4f.x,
+                    vector4f.y,
+                    vector4f.z);
+    }
+
+
+    public void uploadFloat(String varName,
+                            float value) {
+        int varLocation = this.getGetUniformLocation(varName);
+        this.use();
+        glUniform1f(varLocation,
+                    value);
+    }
+
+    public void uploadInt(String varName,
+                          int value) {
+        int varLocation = this.getGetUniformLocation(varName);
+        this.use();
+        glUniform1i(varLocation,
+                    value);
+    }
+
+
+    private int getGetUniformLocation(String varName) {
+        // get location of the variable for shader program
+        return glGetUniformLocation(this.shaderProgramId,
+                                    varName);
+    }
+
+
+
 
     private void createAndCompileShaders() {
         this.createAndCompileVertexShader();
