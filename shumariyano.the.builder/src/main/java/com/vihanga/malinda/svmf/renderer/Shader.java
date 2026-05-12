@@ -76,11 +76,14 @@ public class Shader {
     }
 
     public void uploadMat4f(String varName,
-                            Matrix4f mat4){
-        int varLocation = glGetUniformLocation(shaderProgramId,varName);
+                            Matrix4f mat4) {
+        int varLocation = glGetUniformLocation(shaderProgramId,
+                                               varName); // get location of the variable for shader program
         FloatBuffer matBuffer = BufferUtils.createFloatBuffer(16);
-        mat4.get(matBuffer);
-        glUniformMatrix4fv(varLocation,false,matBuffer);
+        mat4.get(matBuffer); // flatten it out to 1D array with 16 elements
+        glUniformMatrix4fv(varLocation,
+                           false,
+                           matBuffer);
     }
 
     private void createAndCompileShaders() {
