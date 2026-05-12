@@ -2,6 +2,7 @@ package com.vihanga.malinda.svmf.scene;
 
 import com.vihanga.malinda.svmf.listner.KeyListener;
 import com.vihanga.malinda.svmf.renderer.Shader;
+import com.vihanga.malinda.svmf.util.TimeUtil;
 import com.vihanga.malinda.svmf.window.Window;
 import org.lwjgl.BufferUtils;
 
@@ -10,23 +11,22 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 import static org.lwjgl.opengl.GL20.*;
-import static org.lwjgl.opengl.GL20.glGetShaderi;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
 
-public class LevelEditorScene extends Scene{
+public class LevelEditorScene extends Scene {
     private final KeyListener keyListener;
 
     private boolean isChangingScene;
-    private float timeToChangeSceneThreshold ;
+    private float timeToChangeSceneThreshold;
 
-    private float[] vertexArray={
+    private float[] vertexArray = {
             //position                    // color
             100.5f,0.5f,0.0f,              1.0f,0.0f,0.0f,1.0f, // Bottom right  [index of vertex 0]
             0.5f,100.5f,0.0f,              0.0f,1.0f,0.0f,1.0f, // Top Left      [index of vertex 1]
-            100.5f,100.5f,0.0f,               0.0f,0.0f,1.0f,1.0f, // Top right     [index of vertex 2]
-            0.5f,0.5f,0.0f,             1.0f,1.0f,0.0f,1.0f, // Bottom left   [index of vertex 3]
+            100.5f,100.5f,0.0f,            0.0f,0.0f,1.0f,1.0f, // Top right     [index of vertex 2]
+            0.5f,0.5f,0.0f,                1.0f,1.0f,0.0f,1.0f, // Bottom left   [index of vertex 3]
     };
 
     /***
@@ -34,7 +34,7 @@ public class LevelEditorScene extends Scene{
      * IMPORTANT :: Must be in counter-clockwise order
      *===============================================
      */
-    private int[] elementArray ={
+    private int[] elementArray = {
             /*
             K,L,P,J are 4 vertexes and square is made up of 2 triangles
 
@@ -51,8 +51,8 @@ public class LevelEditorScene extends Scene{
                     x--------x
                     J        P
              */
-            2,1,0, // Top right triangle
-            0,1,3  // bottom left triangle
+            2, 1, 0, // Top right triangle
+            0, 1, 3  // bottom left triangle
     };
 
     private int vertexArrayObjectId; // vaoId
@@ -60,16 +60,20 @@ public class LevelEditorScene extends Scene{
     private int elementBufferObjectId; //eboId
 
     private Shader defaultShader;
+    private TimeUtil time;
 
-    public LevelEditorScene(KeyListener keyListener,boolean isChangingScene){
+    public LevelEditorScene(KeyListener keyListener,
+                            boolean isChangingScene,
+                            TimeUtil time) {
         System.out.println("Level Editor Scene created");
         this.keyListener = keyListener;
         this.isChangingScene = isChangingScene;
-        this.timeToChangeSceneThreshold =2.0f;
+        this.timeToChangeSceneThreshold = 2.0f;
+        this.time = time;
     }
 
     @Override
-    public void init(){
+    public void init() {
         this.defaultShader = new Shader("assets/shaders/default.glsl");
         this.defaultShader.compile();
 
@@ -131,14 +135,14 @@ public class LevelEditorScene extends Scene{
 
     @Override
     public void update(float delta) {
-        if(!isChangingScene && keyListener.isKeyPressed(KeyEvent.VK_SPACE)){
+        if (!isChangingScene && keyListener.isKeyPressed(KeyEvent.VK_SPACE)) {
             isChangingScene = true;
         }
 
-        if (isChangingScene && timeToChangeSceneThreshold>0){
+        if (isChangingScene && timeToChangeSceneThreshold > 0) {
             timeToChangeSceneThreshold -= delta;
             // RGB colour transition from black to white
-        } else if(isChangingScene){
+        } else if (isChangingScene) {
             // Change to level scene
 
         }
@@ -147,21 +151,29 @@ public class LevelEditorScene extends Scene{
     @Override
     public void update(Window window,
                        float delta) {
-        camera.getPosition().x -= delta*50.0f;
+        camera.getPosition().x -= delta * 50.0f;
+        camera.getPosition().y -= delta * 50.0f;
 
         this.defaultShader.use();
 
-        defaultShader.uploadMat4f("uProjection",this.camera.getProjectionMatrix());
-        defaultShader.uploadMat4f("uView",this.camera.getViewMatrix());
+        defaultShader.uploadMat4f("uProjection",
+                                  this.camera.getProjectionMatrix());
+        defaultShader.uploadMat4f("uView",
+                                  this.camera.getViewMatrix());
+        defaultShader.uploadFloat("uTime",
+                                  this.time.getElapsedTimeBySeconds());
 
-       // Bind the VertexArrayObject that we are using
+        // Bind the VertexArrayObject that we are using
         glBindVertexArray(this.vertexArrayObjectId);
 
         // Enable the vertex attribute pointers
         glEnableVertexAttribArray(0);
         glEnableVertexAttribArray(1);
 
-        glDrawElements(GL_TRIANGLES,this.elementArray.length,GL_UNSIGNED_INT,0);
+        glDrawElements(GL_TRIANGLES,
+                       this.elementArray.length,
+                       GL_UNSIGNED_INT,
+                       0);
 
         // unbind everything
         glDisableVertexAttribArray(0);

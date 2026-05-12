@@ -3,7 +3,7 @@ package com.vihanga.malinda.svmf.listner;
 import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
 import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
 
-public class KeyListenerImpl implements KeyListener{
+public class KeyListenerImpl implements KeyListener {
 
     private boolean[] keyPressed;
 

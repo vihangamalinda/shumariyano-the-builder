@@ -10,9 +10,9 @@ import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
+import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11C.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
-import static org.lwjgl.glfw.GLFW.*;
 
 public class Window {
 
@@ -24,7 +24,10 @@ public class Window {
 
     private Scene currentScene;
 
-    public Window(WindowInformation windowInformation, MouseListener mouseListener, KeyListener keyListener, TimeUtil time) {
+    public Window(WindowInformation windowInformation,
+                  MouseListener mouseListener,
+                  KeyListener keyListener,
+                  TimeUtil time) {
         this.windowInformation = windowInformation;
         this.mouseListener = mouseListener;
         this.keyListener = keyListener;
@@ -39,10 +42,12 @@ public class Window {
         releaseMemory();
     }
 
-    public void changeScene(int newScene){
-        switch (newScene){
+    public void changeScene(int newScene) {
+        switch (newScene) {
             case 0:
-                currentScene = new LevelEditorScene(this.keyListener,false);
+                currentScene = new LevelEditorScene(this.keyListener,
+                                                    false,
+                                                    this.time);
                 currentScene.init();
                 break;
             case 1:
@@ -50,7 +55,7 @@ public class Window {
                 currentScene.init();
                 break;
             default:
-                assert false: "Unknown scene: " + newScene;
+                assert false : "Unknown scene: " + newScene;
                 break;
         }
     }
@@ -65,11 +70,11 @@ public class Window {
         glfwSetErrorCallback(null).free();
     }
 
-    public void init(){
+    public void init() {
         // Setup an error call-back
         GLFWErrorCallback.createPrint(System.err).set();
 
-        if(!glfwInit()){
+        if (!glfwInit()) {
             throw new IllegalStateException("Unable to initialize GLFW");
         }
 
@@ -79,7 +84,7 @@ public class Window {
         // Create the window
         this.glfwWindow = this.createWindow();
 
-        if(this.glfwWindow == NULL){
+        if (this.glfwWindow == NULL) {
             throw new RuntimeException("Failed to create the GLFW window");
         }
 
@@ -105,7 +110,6 @@ public class Window {
         this.changeScene(0);
 
 
-
     }
 
     private long createWindow() {
@@ -122,41 +126,51 @@ public class Window {
     }
 
     private void configureKeyListnerCallbacks() {
-        glfwSetKeyCallback(this.glfwWindow,keyListener::keyCallback);
+        glfwSetKeyCallback(this.glfwWindow,
+                           keyListener::keyCallback);
     }
 
     private void configureMouseListnerCallbacks() {
-        glfwSetCursorPosCallback(this.glfwWindow,mouseListener::mousePositionCallBack);
-        glfwSetMouseButtonCallback(this.glfwWindow, mouseListener::mouseButtonCallBack);
-        glfwSetScrollCallback(this.glfwWindow, mouseListener::mouseScrollCallBack);
+        glfwSetCursorPosCallback(this.glfwWindow,
+                                 mouseListener::mousePositionCallBack);
+        glfwSetMouseButtonCallback(this.glfwWindow,
+                                   mouseListener::mouseButtonCallBack);
+        glfwSetScrollCallback(this.glfwWindow,
+                              mouseListener::mouseScrollCallBack);
     }
 
     private void configureGLFW() {
         glfwDefaultWindowHints();
-        glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // the window will stay hidden after creation
-        glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will be resizable
-        glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE); // the window will be maximized
+        glfwWindowHint(GLFW_VISIBLE,
+                       GLFW_FALSE); // the window will stay hidden after creation
+        glfwWindowHint(GLFW_RESIZABLE,
+                       GLFW_TRUE); // the window will be resizable
+        glfwWindowHint(GLFW_MAXIMIZED,
+                       GLFW_TRUE); // the window will be maximized
     }
 
-    public void loop(){
-
+    public void loop() {
 
 
         // Set the clear color
-        glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
+        glClearColor(1.0f,
+                     0.0f,
+                     0.0f,
+                     0.0f);
 
-        float beginTime =time.getElapsedTimeBySeconds();
+        float beginTime = time.getElapsedTimeBySeconds();
         float endTime;
-        float delta =-1.0f;
+        float delta = -1.0f;
 
         // Run the rendering loop until the user has attempted to close
         // the window or has pressed the ESCAPE key.
-        while ( !glfwWindowShouldClose(this.glfwWindow) ) {
+        while (!glfwWindowShouldClose(this.glfwWindow)) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
 
-            boolean isValidDelta = delta >0 ;
-            if(isValidDelta){
-                currentScene.update(this,delta);
+            boolean isValidDelta = delta > 0;
+            if (isValidDelta) {
+                currentScene.update(this,
+                                    delta);
             }
 
             // swap the color buffers should be after the currentScene.update() other wise it'll be hidden

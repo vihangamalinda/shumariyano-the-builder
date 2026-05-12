@@ -28,13 +28,13 @@ public class AppConfiguration {
         this.mouseButtonPressed = new boolean[3]; // Left, Right, Middle mouse buttons
 
         this.mouseListener = new MouseListenerImpl(0.0,
-                                                       0.0,
-                                                       0.0,
-                                                       0.0,
-                                                       0.0,
-                                                       0.0,
-                                                       this.mouseButtonPressed,
-                                                       false);
+                                                   0.0,
+                                                   0.0,
+                                                   0.0,
+                                                   0.0,
+                                                   0.0,
+                                                   this.mouseButtonPressed,
+                                                   false);
         this.keyListener = new KeyListenerImpl(this.keyPressed);
         this.timeUtil = new TimeUtilImpl();
 

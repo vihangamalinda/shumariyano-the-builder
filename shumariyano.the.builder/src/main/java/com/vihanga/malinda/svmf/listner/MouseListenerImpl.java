@@ -40,6 +40,7 @@ public class MouseListenerImpl implements MouseListener {
         this.isDragging = isDragging;
 
     }
+
     @Override
     public void mousePositionCallBack(long window,
                                       double xPosition,
@@ -83,7 +84,7 @@ public class MouseListenerImpl implements MouseListener {
         this.scrollY = yOffset;
     }
 
-//    @Override
+    //    @Override
     public void endFrame() {
         this.scrollX = 0;
         this.scrollY = 0;
@@ -115,7 +116,7 @@ public class MouseListenerImpl implements MouseListener {
     }
 
     private void updateCurrentPosition(double xPosition,
-                                      double yPosition) {
+                                       double yPosition) {
         this.setCurrentXPosition(xPosition);
         this.setCurrentYPosition(yPosition);
     }
