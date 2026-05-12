@@ -23,10 +23,10 @@ public class LevelEditorScene extends Scene{
 
     private float[] vertexArray={
             //position                    // color
-            0.5f,-0.5f,0.0f,              1.0f,0.0f,0.0f,1.0f, // Bottom right  [index of vertex 0]
-            -0.5f,0.5f,0.0f,              0.0f,1.0f,0.0f,1.0f, // Top Left      [index of vertex 1]
-            0.5f,0.5f,0.0f,               0.0f,0.0f,1.0f,1.0f, // Top right     [index of vertex 2]
-            -0.5f,-0.5f,0.0f,             1.0f,1.0f,0.0f,1.0f, // Bottom left   [index of vertex 3]
+            100.5f,0.5f,0.0f,              1.0f,0.0f,0.0f,1.0f, // Bottom right  [index of vertex 0]
+            0.5f,100.5f,0.0f,              0.0f,1.0f,0.0f,1.0f, // Top Left      [index of vertex 1]
+            100.5f,100.5f,0.0f,               0.0f,0.0f,1.0f,1.0f, // Top right     [index of vertex 2]
+            0.5f,0.5f,0.0f,             1.0f,1.0f,0.0f,1.0f, // Bottom left   [index of vertex 3]
     };
 
     /***
@@ -147,7 +147,12 @@ public class LevelEditorScene extends Scene{
     @Override
     public void update(Window window,
                        float delta) {
+        camera.getPosition().x -= delta*50.0f;
+
         this.defaultShader.use();
+
+        defaultShader.uploadMat4f("uProjection",this.camera.getProjectionMatrix());
+        defaultShader.uploadMat4f("uView",this.camera.getViewMatrix());
 
        // Bind the VertexArrayObject that we are using
         glBindVertexArray(this.vertexArrayObjectId);
