@@ -24,6 +24,7 @@ public class Shader {
     private int vertexId;
     private int fragmentId;
     private int shaderProgramId;
+    private boolean isBeingUsed;
 
 
     public Shader(String filepath) {
@@ -67,12 +68,22 @@ public class Shader {
     }
 
     public void use() {
-        // Bind shader program
-        glUseProgram(this.shaderProgramId);
+        if (!this.isBeingUsed()) {
+            // Bind shader program
+            glUseProgram(this.shaderProgramId);
+        }
+    }
+
+    private boolean isBeingUsed(){
+        return this.isBeingUsed;
+    }
+    private void setIsBeingUsed(boolean isBeingUsed){
+        this.isBeingUsed = isBeingUsed;
     }
 
     public void detach() {
         glUseProgram(0);
+        setIsBeingUsed(false);
     }
 
     public void uploadMat4f(String varName,
