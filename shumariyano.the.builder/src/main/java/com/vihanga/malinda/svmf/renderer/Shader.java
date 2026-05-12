@@ -74,10 +74,11 @@ public class Shader {
         }
     }
 
-    private boolean isBeingUsed(){
+    private boolean isBeingUsed() {
         return this.isBeingUsed;
     }
-    private void setIsBeingUsed(boolean isBeingUsed){
+
+    private void setIsBeingUsed(boolean isBeingUsed) {
         this.isBeingUsed = isBeingUsed;
     }
 
@@ -158,8 +159,6 @@ public class Shader {
         return glGetUniformLocation(this.shaderProgramId,
                                     varName);
     }
-
-
 
 
     private void createAndCompileShaders() {

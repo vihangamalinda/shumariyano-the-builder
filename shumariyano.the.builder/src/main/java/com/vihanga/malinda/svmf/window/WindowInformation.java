@@ -5,7 +5,9 @@ public class WindowInformation {
     private int height;
     private String title;
 
-    public WindowInformation(int width, int height, String title) {
+    public WindowInformation(int width,
+                             int height,
+                             String title) {
         this.width = width;
         this.height = height;
         this.title = title;

@@ -1,7 +1,6 @@
 package com.vihanga.malinda.svmf.camera;
 
 import org.joml.Matrix4f;
-import org.joml.Vector2d;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
@@ -10,8 +9,10 @@ public class Camera {
     private Matrix4f viewMatrix;
     private Vector2f position;
 
-    public Camera(Vector2f position,Matrix4f projectionMatrix,Matrix4f viewMatrix){
-        this.position=position;
+    public Camera(Vector2f position,
+                  Matrix4f projectionMatrix,
+                  Matrix4f viewMatrix) {
+        this.position = position;
         this.projectionMatrix = projectionMatrix;
         this.viewMatrix = viewMatrix;
         this.adjustProjection();
@@ -50,7 +51,7 @@ public class Camera {
         return this.viewMatrix;
     }
 
-    public Matrix4f getProjectionMatrix(){
+    public Matrix4f getProjectionMatrix() {
         return this.projectionMatrix;
     }
 

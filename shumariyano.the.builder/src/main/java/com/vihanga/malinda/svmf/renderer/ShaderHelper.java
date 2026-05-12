@@ -20,7 +20,8 @@ public class ShaderHelper {
                                                endOfLine).trim();
 
         // Find the Second pattern after #type # "pattern
-        index = source.indexOf("#type",endOfLine) + 6;
+        index = source.indexOf("#type",
+                               endOfLine) + 6;
         endOfLine = source.indexOf("\r\n",
                                    index);
         String secondPattern = source.substring(index,
