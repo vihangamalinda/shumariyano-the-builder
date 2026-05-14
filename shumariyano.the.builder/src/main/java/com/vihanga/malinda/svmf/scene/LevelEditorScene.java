@@ -116,8 +116,8 @@ public class LevelEditorScene extends Scene {
         // Add the vertex attribute pointers
         int positionSize = 3;
         int colorSize = 4;
-        int floatSizeBytes = 4;
-        int vertexSizeBytes = (positionSize + colorSize) * floatSizeBytes;
+//        int floatSizeBytes = 4;
+        int vertexSizeBytes = (positionSize + colorSize+uvSize) * Float.BYTES;
         glVertexAttribPointer(0,
                               positionSize,
                               GL_FLOAT,
@@ -131,7 +131,7 @@ public class LevelEditorScene extends Scene {
                               GL_FLOAT,
                               false,
                               vertexSizeBytes,
-                              positionSize * floatSizeBytes);
+                              positionSize * Float.BYTES);
         glEnableVertexAttribArray(1);
     }
 
