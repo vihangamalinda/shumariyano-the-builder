@@ -63,6 +63,7 @@ public class LevelEditorScene extends Scene {
 
     private Shader defaultShader;
     private TimeUtil time;
+    private Texture testTexture;
 
     public LevelEditorScene(KeyListener keyListener,
                             boolean isChangingScene,
@@ -72,6 +73,7 @@ public class LevelEditorScene extends Scene {
         this.isChangingScene = isChangingScene;
         this.timeToChangeSceneThreshold = 2.0f;
         this.time = time;
+        this.testTexture = new Texture("assets/images/test_all.png");
     }
 
     @Override
