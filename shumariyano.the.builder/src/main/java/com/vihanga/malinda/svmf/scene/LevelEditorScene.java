@@ -116,6 +116,7 @@ public class LevelEditorScene extends Scene {
         // Add the vertex attribute pointers
         int positionSize = 3;
         int colorSize = 4;
+        int uvSize =2;
 //        int floatSizeBytes = 4;
         int vertexSizeBytes = (positionSize + colorSize+uvSize) * Float.BYTES;
         glVertexAttribPointer(0,
@@ -133,6 +134,17 @@ public class LevelEditorScene extends Scene {
                               vertexSizeBytes,
                               positionSize * Float.BYTES);
         glEnableVertexAttribArray(1);
+
+        int offset = (positionSize + colorSize) * Float.BYTES;
+        // enabling attribute pointer for uv coordinates (texture coordinates)
+
+        glVertexAttribPointer(2,
+                              uvSize,
+                              GL_FLOAT,
+                              false,
+                              vertexSizeBytes,
+                              offset);
+        glEnableVertexAttribArray(2);
     }
 
     @Override
