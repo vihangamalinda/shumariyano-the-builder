@@ -2,10 +2,12 @@ package com.vihanga.malinda.svmf.scene;
 
 import com.vihanga.malinda.svmf.listner.KeyListener;
 import com.vihanga.malinda.svmf.renderer.Shader;
+import com.vihanga.malinda.svmf.renderer.texture.Texture;
 import com.vihanga.malinda.svmf.util.TimeUtil;
 import com.vihanga.malinda.svmf.window.Window;
 import org.lwjgl.BufferUtils;
 
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -22,11 +24,11 @@ public class LevelEditorScene extends Scene {
     private float timeToChangeSceneThreshold;
 
     private float[] vertexArray = {
-            //position                    // color
-            100.5f,0.5f,0.0f,              1.0f,0.0f,0.0f,1.0f, // Bottom right  [index of vertex 0]
-            0.5f,100.5f,0.0f,              0.0f,1.0f,0.0f,1.0f, // Top Left      [index of vertex 1]
-            100.5f,100.5f,0.0f,            0.0f,0.0f,1.0f,1.0f, // Top right     [index of vertex 2]
-            0.5f,0.5f,0.0f,                1.0f,1.0f,0.0f,1.0f, // Bottom left   [index of vertex 3]
+            //position                    // color                     UV (texture) coordinates
+            100.5f,0.5f,0.0f,              1.0f,0.0f,0.0f,1.0f,                 1,1,           // Bottom right  [index of vertex 0]
+            0.5f,100.5f,0.0f,              0.0f,1.0f,0.0f,1.0f,                 0,0,           // Top Left  [index of vertex 1]
+            100.5f,100.5f,0.0f,            0.0f,0.0f,1.0f,1.0f,                 1,0,           // Top right     [index of vertex 2]
+            0.5f,0.5f,0.0f,                1.0f,1.0f,0.0f,1.0f,                 0,1,           //  Bottom left   [index of vertex 3]
     };
 
     /***
