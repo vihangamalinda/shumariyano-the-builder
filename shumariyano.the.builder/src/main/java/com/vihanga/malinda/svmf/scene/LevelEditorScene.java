@@ -172,11 +172,16 @@ public class LevelEditorScene extends Scene {
 
         this.defaultShader.use();
 
-        defaultShader.uploadMat4f("uProjection",
+        // Upload texture to shader
+        this.defaultShader.uploadTexture("TEXT_SAMPLER",0);
+        glActiveTexture(GL_TEXTURE0);
+        this.testTexture.bind();
+
+        this.defaultShader.uploadMat4f("uProjection",
                                   this.camera.getProjectionMatrix());
-        defaultShader.uploadMat4f("uView",
+        this.defaultShader.uploadMat4f("uView",
                                   this.camera.getViewMatrix());
-        defaultShader.uploadFloat("uTime",
+        this.defaultShader.uploadFloat("uTime",
                                   this.time.getElapsedTimeBySeconds());
 
         // Bind the VertexArrayObject that we are using
