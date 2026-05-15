@@ -2,10 +2,12 @@ package com.vihanga.malinda.svmf.scene;
 
 import com.vihanga.malinda.svmf.listner.KeyListener;
 import com.vihanga.malinda.svmf.renderer.Shader;
+import com.vihanga.malinda.svmf.renderer.texture.Texture;
 import com.vihanga.malinda.svmf.util.TimeUtil;
 import com.vihanga.malinda.svmf.window.Window;
 import org.lwjgl.BufferUtils;
 
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -22,11 +24,11 @@ public class LevelEditorScene extends Scene {
     private float timeToChangeSceneThreshold;
 
     private float[] vertexArray = {
-            //position                    // color
-            100.5f,0.5f,0.0f,              1.0f,0.0f,0.0f,1.0f, // Bottom right  [index of vertex 0]
-            0.5f,100.5f,0.0f,              0.0f,1.0f,0.0f,1.0f, // Top Left      [index of vertex 1]
-            100.5f,100.5f,0.0f,            0.0f,0.0f,1.0f,1.0f, // Top right     [index of vertex 2]
-            0.5f,0.5f,0.0f,                1.0f,1.0f,0.0f,1.0f, // Bottom left   [index of vertex 3]
+            //position                    // color                     UV (texture) coordinates
+            100.5f,0.5f,0.0f,              1.0f,0.0f,0.0f,1.0f,                 1,1,           // Bottom right  [index of vertex 0]
+            0.5f,100.5f,0.0f,              0.0f,1.0f,0.0f,1.0f,                 0,0,           // Top Left  [index of vertex 1]
+            100.5f,100.5f,0.0f,            0.0f,0.0f,1.0f,1.0f,                 1,0,           // Top right     [index of vertex 2]
+            0.5f,0.5f,0.0f,                1.0f,1.0f,0.0f,1.0f,                 0,1,           //  Bottom left   [index of vertex 3]
     };
 
     /***
@@ -61,6 +63,7 @@ public class LevelEditorScene extends Scene {
 
     private Shader defaultShader;
     private TimeUtil time;
+    private Texture testTexture;
 
     public LevelEditorScene(KeyListener keyListener,
                             boolean isChangingScene,
@@ -70,6 +73,7 @@ public class LevelEditorScene extends Scene {
         this.isChangingScene = isChangingScene;
         this.timeToChangeSceneThreshold = 2.0f;
         this.time = time;
+        this.testTexture = new Texture("assets/images/test_all.png");
     }
 
     @Override
@@ -114,8 +118,9 @@ public class LevelEditorScene extends Scene {
         // Add the vertex attribute pointers
         int positionSize = 3;
         int colorSize = 4;
-        int floatSizeBytes = 4;
-        int vertexSizeBytes = (positionSize + colorSize) * floatSizeBytes;
+        int uvSize =2;
+//        int floatSizeBytes = 4;
+        int vertexSizeBytes = (positionSize + colorSize+uvSize) * Float.BYTES;
         glVertexAttribPointer(0,
                               positionSize,
                               GL_FLOAT,
@@ -129,8 +134,19 @@ public class LevelEditorScene extends Scene {
                               GL_FLOAT,
                               false,
                               vertexSizeBytes,
-                              positionSize * floatSizeBytes);
+                              positionSize * Float.BYTES);
         glEnableVertexAttribArray(1);
+
+        int offset = (positionSize + colorSize) * Float.BYTES;
+        // enabling attribute pointer for uv coordinates (texture coordinates)
+
+        glVertexAttribPointer(2,
+                              uvSize,
+                              GL_FLOAT,
+                              false,
+                              vertexSizeBytes,
+                              offset);
+        glEnableVertexAttribArray(2);
     }
 
     @Override
@@ -156,11 +172,16 @@ public class LevelEditorScene extends Scene {
 
         this.defaultShader.use();
 
-        defaultShader.uploadMat4f("uProjection",
+        // Upload texture to shader
+        this.defaultShader.uploadTexture("TEXT_SAMPLER",0);
+        glActiveTexture(GL_TEXTURE0);
+        this.testTexture.bind();
+
+        this.defaultShader.uploadMat4f("uProjection",
                                   this.camera.getProjectionMatrix());
-        defaultShader.uploadMat4f("uView",
+        this.defaultShader.uploadMat4f("uView",
                                   this.camera.getViewMatrix());
-        defaultShader.uploadFloat("uTime",
+        this.defaultShader.uploadFloat("uTime",
                                   this.time.getElapsedTimeBySeconds());
 
         // Bind the VertexArrayObject that we are using
